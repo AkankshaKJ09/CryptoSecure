@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AES Cryptography Tool</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6c5ce7;
+            --secondary: #a29bfe;
+            --dark: #2d3436;
+            --light: #f5f6fa;
+            --success: #00b894;
+            --danger: #d63031;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: var(--dark);
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+        
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+        }
+        
+        .subtitle {
+            font-weight: 300;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .tab {
+            padding: 12px 25px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+        }
+        
+        .tab.active {
+            border-bottom: 3px solid var(--primary);
+            color: var(--primary);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        input, textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 16px;
+            transition: border 0.3s ease;
+        }
+        
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.2);
+        }
+        
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+        }
+        
+        button:hover {
+            background: #5a4bd1;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(108, 92, 231, 0.4);
+        }
+        
+        button i {
+            margin-right: 8px;
+        }
+        
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            background: #f8f9fa;
+            border-left: 4px solid var(--primary);
+            display: none;
+        }
+        
+        .result-title {
+            font-weight: 500;
+            margin-bottom: 10px;
+            color: var(--primary);
+        }
+        
+        .info-box {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            border-left: 4px solid #2196f3;
+        }
+        
+        .info-title {
+            font-weight: 500;
+            margin-bottom: 10px;
+            color: #1976d2;
+        }
+        
+        .key-note {
+            font-size: 14px;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 10px 0;
+        }
+        
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top: 4px solid var(--primary);
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                border-radius: 0;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>AES Cryptography Tool</h1>
+            <p class="subtitle">Advanced Encryption Standard (AES-256) Implementation</p>
+        </header>
+        
+        <div class="content">
+            <div class="info-box">
+                <div class="info-title">About AES-256</div>
+                <p>AES (Advanced Encryption Standard) is a symmetric block cipher used by governments and organizations worldwide to protect sensitive data. This implementation uses AES-256 with CBC mode, providing strong encryption for your data.</p>
+            </div>
+            
+            <div class="tabs">
+                <div class="tab active" onclick="switchTab('encrypt')">Encrypt</div>
+                <div class="tab" onclick="switchTab('decrypt')">Decrypt</div>
+            </div>
+            
+            <div id="encrypt-tab" class="tab-content active">
+                <div class="form-group">
+                    <label for="encrypt-plaintext">Plaintext to Encrypt</label>
+                    <textarea id="encrypt-plaintext" placeholder="Enter your secret message here..."></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="encrypt-key">Encryption Key</label>
+                    <input type="text" id="encrypt-key" placeholder="Enter your secret key (any length)">
+                    <p class="key-note">Note: The key will be hashed to 32 bytes for AES-256. Remember this key for decryption!</p>
+                </div>
+                
+                <button onclick="encryptData()"><i>🔒</i> Encrypt</button>
+                
+                <div class="loading" id="encrypt-loading">
+                    <div class="spinner"></div>
+                    <p>Encrypting your data...</p>
+                </div>
+                
+                <div class="result" id="encrypt-result">
+                    <div class="result-title">Encrypted Result (Base64)</div>
+                    <div id="encrypt-output"></div>
+                </div>
+            </div>
+            
+            <div id="decrypt-tab" class="tab-content">
+                <div class="form-group">
+                    <label for="decrypt-ciphertext">Ciphertext to Decrypt (Base64)</label>
+                    <textarea id="decrypt-ciphertext" placeholder="Enter your encrypted message here..."></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="decrypt-key">Decryption Key</label>
+                    <input type="text" id="decrypt-key" placeholder="Enter the same key used for encryption">
+                </div>
+                
+                <button onclick="decryptData()"><i>🔓</i> Decrypt</button>
+                
+                <div class="loading" id="decrypt-loading">
+                    <div class="spinner"></div>
+                    <p>Decrypting your data...</p>
+                </div>
+                
+                <div class="result" id="decrypt-result">
+                    <div class="result-title">Decrypted Result</div>
+                    <div id="decrypt-output"></div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Implementation using PyCryptodome library | AES-256 with CBC mode and PKCS7 padding</p>
+        </footer>
+    </div>
+    
+    <script>
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.getElementById(tabName + '-tab').classList.add('active');
+            document.querySelectorAll('.tab')[tabName === 'encrypt' ? 0 : 1].classList.add('active');
+        }
+        
+        function encryptData() {
+            const plaintext = document.getElementById('encrypt-plaintext').value;
+            const key = document.getElementById('encrypt-key').value;
+            
+            if (!plaintext || !key) {
+                alert('Please enter both plaintext and key');
+                return;
+            }
+            
+            const loading = document.getElementById('encrypt-loading');
+            const result = document.getElementById('encrypt-result');
+            const output = document.getElementById('encrypt-output');
+            
+            loading.style.display = 'block';
+            result.style.display = 'none';
+            
+            fetch('/encrypt', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    plaintext: plaintext,
+                    key: key
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                loading.style.display = 'none';
+                
+                if (data.status === 'success') {
+                    output.textContent = data.ciphertext;
+                    result.style.display = 'block';
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            })
+            .catch(error => {
+                loading.style.display = 'none';
+                alert('An error occurred: ' + error.message);
+            });
+        }
+        
+        function decryptData() {
+            const ciphertext = document.getElementById('decrypt-ciphertext').value;
+            const key = document.getElementById('decrypt-key').value;
+            
+            if (!ciphertext || !key) {
+                alert('Please enter both ciphertext and key');
+                return;
+            }
+            
+            const loading = document.getElementById('decrypt-loading');
+            const result = document.getElementById('decrypt-result');
+            const output = document.getElementById('decrypt-output');
+            
+            loading.style.display = 'block';
+            result.style.display = 'none';
+            
+            fetch('/decrypt', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    ciphertext: ciphertext,
+                    key: key
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                loading.style.display = 'none';
+                
+                if (data.status === 'success') {
+                    output.textContent = data.plaintext;
+                    result.style.display = 'block';
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            })
+            .catch(error => {
+                loading.style.display = 'none';
+                alert('An error occurred: ' + error.message);
+            });
+        }
+    </script>
+</body>
+</html>
